@@ -1,0 +1,42 @@
+option "title" "Фінанси Олі"
+option "operating_currency" "PLN"
+
+2026-07-31 open Assets:Банк                    PLN
+2026-07-31 open Assets:Готівка                 PLN
+2026-07-31 open Equity:Початковий-Залишок
+
+2026-07-31 open Income:Зарплата                PLN
+2026-07-31 open Income:Інше                    PLN
+
+2026-07-31 open Expenses:Житло                 PLN
+2026-07-31 open Expenses:Продукти              PLN
+2026-07-31 open Expenses:Кафе                  PLN
+2026-07-31 open Expenses:Доставка-Їжі          PLN
+2026-07-31 open Expenses:Транспорт             PLN
+2026-07-31 open Expenses:Підписки              PLN
+2026-07-31 open Expenses:Телефон               PLN
+2026-07-31 open Expenses:Косметика-Побут       PLN
+2026-07-31 open Expenses:Спорт                 PLN
+2026-07-31 open Expenses:Без-Категорії         PLN
+
+include "transactions-olia.beancount"
+include "manual-olia.beancount"
+
+; Fava записує витрати, додані кнопкою +, у manual-olia.beancount.
+2026-07-31 custom "fava-option" "default-file" "manual-olia.beancount"
+
+; Збережені запити, усі по місяцях. Жовтень неповний (виписка до 15.10).
+; Запуск: uv run bean-query ledger/olia.beancount ".run <назва>"
+
+; 1. Витрати за категоріями
+2026-07-31 query "категорії" "SELECT year, month, root(account, 2) AS \"категорія\", sum(number) AS \"сума\" WHERE root(account, 1) = 'Expenses' GROUP BY year, month, root(account, 2) ORDER BY year, month, sum(number) DESC"
+
+; 2. Норма заощаджень: відкладено = дохід - витрати, норма = відкладено / дохід.
+;    Колонка «остання операція» показує, до якого дня є дані (видно неповний місяць).
+2026-07-31 query "заощадження" "SELECT year, month, -sum(number * decimal(root(account, 1) = 'Income')) AS \"дохід\", sum(number * decimal(root(account, 1) = 'Expenses')) AS \"витрати\", -sum(number * decimal(root(account, 1) = 'Income')) - sum(number * decimal(root(account, 1) = 'Expenses')) AS \"відкладено\", round(100 * (-sum(number * decimal(root(account, 1) = 'Income')) - sum(number * decimal(root(account, 1) = 'Expenses'))) / -sum(number * decimal(root(account, 1) = 'Income')), 1) AS \"норма заощаджень, %\", max(date) AS \"остання операція\" WHERE root(account, 1) IN ('Income', 'Expenses') GROUP BY year, month ORDER BY year, month"
+
+; 3. Фіксовані (тег #fixed) і змінні витрати
+2026-07-31 query "фіксовані-змінні" "SELECT year, month, sum(number * decimal('fixed' IN tags)) AS \"фіксовані\", sum(number * decimal(NOT 'fixed' IN tags)) AS \"змінні\", sum(number) AS \"всього\", round(100 * sum(number * decimal('fixed' IN tags)) / sum(number), 1) AS \"фіксовані, %\" WHERE root(account, 1) = 'Expenses' GROUP BY year, month ORDER BY year, month"
+
+; 4. Операції без категорії (Expenses:Без-Категорії і Income:Інше). Порожній результат = усе розкладено.
+2026-07-31 query "без-категорії" "SELECT year, month, account AS \"рахунок\", count(narration) AS \"операцій\", sum(number) AS \"сума\" WHERE account IN ('Expenses:Без-Категорії', 'Income:Інше') GROUP BY year, month, account ORDER BY year, month"

@@ -1,0 +1,19 @@
+# Те, що генерується з виписок (самі виписки штучні й лежать у data/)
+ledger/transactions-*.beancount
+ledger/manual-*.beancount
+report.html
+report.py
+.python-version
+
+# Документи проєкту лишаються локально, у репозиторії лише README
+*.md
+!README.md
+docs/
+
+# Локальні налаштування Claude Code
+.claude/
+
+# Середовище і службові файли
+.venv/
+__pycache__/
+.DS_Store

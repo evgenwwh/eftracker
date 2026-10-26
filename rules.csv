@@ -1,0 +1,34 @@
+шаблон,рахунок,фіксована
+Rent,Expenses:Житло,так
+Salary,Income:Зарплата,ні
+Biedronka,Expenses:Продукти,ні
+Lidl,Expenses:Продукти,ні
+Żabka,Expenses:Продукти,ні
+Carrefour,Expenses:Продукти,ні
+Bar Mleczny,Expenses:Кафе,ні
+Starbucks,Expenses:Кафе,ні
+Bolt Food,Expenses:Доставка-Їжі,ні
+Wolt,Expenses:Доставка-Їжі,ні
+Bolt,Expenses:Транспорт,ні
+Uber,Expenses:Транспорт,ні
+ZTM,Expenses:Транспорт,так
+Netflix,Expenses:Підписки,так
+Spotify,Expenses:Підписки,так
+Claude.ai,Expenses:Підписки,так
+Play — abonament,Expenses:Телефон,так
+Rossmann,Expenses:Косметика-Побут,ні
+Decathlon,Expenses:Спорт,ні
+Kaufland,Expenses:Продукти,ні
+Auchan,Expenses:Продукти,ні
+Pyszne,Expenses:Доставка-Їжі,ні
+Costa Coffee,Expenses:Кафе,ні
+Manekin,Expenses:Кафе,ні
+Super-Pharm,Expenses:Косметика-Побут,ні
+Światłowód,Expenses:Інтернет,так
+Abonament GSM,Expenses:Телефон,так
+PGE,Expenses:Світло,так
+Zdrofit,Expenses:Спорт,так
+YouTube Premium,Expenses:Підписки,так
+Steam,Expenses:Розваги,ні
+Allegro,Expenses:Покупки,ні
+Wynagrodzenie,Income:Зарплата,ні
