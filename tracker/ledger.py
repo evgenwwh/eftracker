@@ -76,3 +76,27 @@ def ensure_manual(path: Path):
     """Файл для витрат, доданих у Fava кнопкою +. Створюємо порожнім, якщо його ще немає; імпорт його не чіпає."""
     if not path.exists():
         path.write_text("; Витрати, додані вручну через Fava (кнопка +). Імпорт цей файл не перезаписує.\n", encoding="utf-8")
+
+
+CASH = "Assets:Готівка"
+
+
+def expense_accounts(ledger: Path):
+    """Категорії витрат, відкриті в обліку, крім «Без-Категорії»: з них обирають у формі."""
+    accounts = []
+    for line in ledger.read_text(encoding="utf-8").splitlines():
+        parts = line.split()
+        if len(parts) >= 3 and parts[1] == "open" and parts[2].startswith("Expenses:"):
+            if parts[2] != UNCATEGORIZED_EXPENSE:
+                accounts.append(parts[2])
+    return accounts
+
+
+def manual_entry(day, description, account, amount):
+    """Готівкова витрата у форматі Beancount: гроші йдуть з готівки на категорію."""
+    narration = " ".join(description.replace('"', "'").split())[:80] or "Готівка"
+    return (
+        f'\n{day} * "{narration}"\n'
+        f"  {account}  {money(amount)}\n"
+        f"  {CASH}\n"
+    )

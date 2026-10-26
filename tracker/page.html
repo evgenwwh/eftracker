@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Фінанси Олі і Марка</title>
+<style>
+body{margin:0;background:#F6F6F4}
+@media (prefers-color-scheme: dark){body{background:#0E0F11}}
+.fx{
+  --bg:#F6F6F4; --card:#FFFFFF; --line:#E6E5E1; --text:#121214; --text2:#5A5955; --track:#EEEDE9; --seg:#E4E3DF;
+  --marko:#2F66D9; --marko-soft:#AFC6F4; --marko-on:#FFFFFF; --marko-tint:#E9F0FD;
+  --olia:#C94B33; --olia-soft:#F3BBAD; --olia-on:#FFFFFF; --olia-tint:#FCECE8;
+  --shadow:0 1px 2px rgba(17,17,20,.05),0 1px 1px rgba(17,17,20,.03);
+  --sheet-shadow:0 -8px 32px rgba(17,17,20,.14);
+  --scrim:rgba(17,17,20,.32);
+  container-type:inline-size;
+  min-height:100%;
+  box-sizing:border-box;
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,system-ui,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.fx[data-theme="dark"]{
+  --bg:#0E0F11; --card:#17181B; --line:#26272C; --text:#F1F1EF; --text2:#A4A4A0; --track:#24252A; --seg:#2C2D33;
+  --marko:#82A9FF; --marko-soft:#34476F; --marko-on:#0A1122; --marko-tint:#1B2438;
+  --olia:#FF8F78; --olia-soft:#6B3A30; --olia-on:#22100B; --olia-tint:#2E1D19;
+  --shadow:none; --sheet-shadow:0 -8px 32px rgba(0,0,0,.5); --scrim:rgba(0,0,0,.55);
+}
+@media (prefers-color-scheme: dark){
+  .fx[data-theme="auto"]{
+    --bg:#0E0F11; --card:#17181B; --line:#26272C; --text:#F1F1EF; --text2:#A4A4A0; --track:#24252A; --seg:#2C2D33;
+    --marko:#82A9FF; --marko-soft:#34476F; --marko-on:#0A1122; --marko-tint:#1B2438;
+    --olia:#FF8F78; --olia-soft:#6B3A30; --olia-on:#22100B; --olia-tint:#2E1D19;
+    --shadow:none; --sheet-shadow:0 -8px 32px rgba(0,0,0,.5); --scrim:rgba(0,0,0,.55);
+  }
+}
+.fx[data-person="marko"]{--accent:var(--marko);--accent-soft:var(--marko-soft);--on-accent:var(--marko-on);--accent-tint:var(--marko-tint)}
+.fx[data-person="olia"]{--accent:var(--olia);--accent-soft:var(--olia-soft);--on-accent:var(--olia-on);--accent-tint:var(--olia-tint)}
+.fx *,.fx *::before,.fx *::after{box-sizing:border-box}
+:where(.fx) button,:where(.fx) input{font:inherit;color:inherit}
+.fx button{cursor:pointer}
+.fx :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fx .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.fx-wrap{max-width:1040px;margin:0 auto;padding:16px 16px 48px;display:flex;flex-direction:column;gap:20px}
+
+.fx-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.fx-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--track)}
+.fx-pill{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;font-size:16px;border:0;border-radius:999px;background:transparent;color:var(--text2);font-weight:500;transition:background-color 180ms ease,color 180ms ease,box-shadow 180ms ease}
+.fx-pill:hover{color:var(--text)}
+.fx-pill--on{background:var(--card);color:var(--text);box-shadow:var(--shadow),0 0 0 1px var(--line)}
+.fx-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.fx-dot--marko{background:var(--marko)}
+.fx-dot--olia{background:var(--olia)}
+.fx-spacer{flex:1 1 auto}
+.fx-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:var(--text2);transition:color 150ms ease}
+.fx-icon-btn:hover{color:var(--text)}
+.fx-add{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;transition:background-color 200ms ease,transform 150ms ease}
+.fx-add:active{transform:scale(.98)}
+
+.fx-months{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
+.fx-months::-webkit-scrollbar{display:none}
+.fx-chip{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid transparent;background:var(--track);color:var(--text);font-size:15px;font-weight:500;white-space:nowrap;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
+.fx-chip--on{background:var(--text);border-color:var(--text);color:var(--bg)}
+.fx-badge{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:999px;background:var(--card);color:var(--text2);font-size:13px;font-weight:500}
+.fx-chip--on .fx-badge{background:color-mix(in srgb,var(--bg) 18%,transparent);color:var(--bg)}
+
+.fx-title{display:flex;flex-direction:column;gap:2px}
+.fx-title h1{margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.01em}
+.fx-title p{margin:0;color:var(--text2);font-size:15px}
+
+.fx-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.fx-stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow)}
+.fx-stat-label{font-size:14px;color:var(--text2);font-weight:500}
+.fx-big{font-size:30px;line-height:1.15;font-weight:600;letter-spacing:-0.02em}
+.fx-big--accent{color:var(--accent)}
+.fx-big--muted{font-size:22px;color:var(--text2);font-weight:500;padding:4px 0 2px}
+.fx-stat-sub{font-size:14px;color:var(--text2)}
+.fx-lede{margin:0;color:var(--text);font-size:16px;line-height:1.55;max-width:68ch}
+
+.fx-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.fx-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.fx-card h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-0.005em}
+.fx-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.fx-card-total{font-size:14px;white-space:nowrap;color:var(--text2)}
+.fx-stack{display:flex;gap:3px;height:14px;width:100%}
+.fx-seg-fixed{display:block;height:100%;border-radius:999px;background:var(--accent)}
+.fx-seg-var{display:block;height:100%;border-radius:999px;background:var(--accent-soft)}
+.fx-legend{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.fx-leg{display:flex;flex-direction:column;gap:2px}
+.fx-leg-top{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2)}
+.fx-sw{width:10px;height:10px;border-radius:3px;flex:none}
+.fx-sw--fixed{background:var(--accent)}
+.fx-sw--var{background:var(--accent-soft)}
+.fx-leg-val{font-size:19px;font-weight:600}
+.fx-leg-pct{font-size:14px;color:var(--text2)}
+.fx-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.fx-bar-row{display:flex;flex-direction:column;gap:6px}
+.fx-bar-meta{display:flex;justify-content:space-between;gap:12px;font-size:16px}
+.fx-bar-name{color:var(--text)}
+.fx-bar-val{color:var(--text);font-weight:500}
+.fx-track{display:block;height:10px;border-radius:999px;background:var(--track);overflow:hidden}
+.fx-fill{display:block;height:100%;border-radius:999px;background:var(--accent)}
+.fx-concl{margin:0;padding-top:14px;border-top:1px solid var(--line);color:var(--text);font-size:15px;line-height:1.55}
+
+.fx-sheet-wrap{position:fixed;inset:0;z-index:20;pointer-events:none;visibility:hidden;transition:visibility 0s linear 240ms}
+.fx-sheet-wrap--open{pointer-events:auto;visibility:visible;transition-delay:0s}
+.fx-scrim{position:absolute;inset:0;width:100%;border:0;padding:0;margin:0;background:var(--scrim);opacity:0;transition:opacity 200ms ease;cursor:default}
+.fx-sheet-wrap--open .fx-scrim{opacity:1}
+.fx-sheet{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;max-height:calc(100% - 24px);overflow-y:auto;background:var(--card);border-radius:20px 20px 0 0;box-shadow:var(--sheet-shadow);padding:8px 20px 24px;display:flex;flex-direction:column;gap:18px;transform:translateY(100%);transition:transform 240ms cubic-bezier(.2,.8,.2,1)}
+.fx-sheet-wrap--open .fx-sheet{transform:translateY(0)}
+.fx-grab{width:36px;height:4px;border-radius:999px;background:var(--line);margin:4px auto 0}
+.fx-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fx-sheet-head h2{margin:0;font-size:18px;font-weight:600}
+.fx-field{display:flex;flex-direction:column;gap:8px}
+.fx-label{font-size:14px;color:var(--text2);font-weight:500}
+.fx-amount{display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--line);padding-bottom:6px;transition:border-color 150ms ease}
+.fx-amount:focus-within{border-color:var(--accent)}
+.fx-amount input{flex:1 1 auto;min-width:0;border:0;background:transparent;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;padding:0;outline:none}
+.fx-amount input::placeholder{color:var(--text2);opacity:.55}
+.fx-amount span{font-size:22px;color:var(--text2);font-weight:500}
+.fx-cats{display:flex;flex-wrap:wrap;gap:8px}
+.fx-cat{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid transparent;background:var(--track);color:var(--text);font-size:15px;transition:background-color 150ms ease,border-color 150ms ease}
+.fx-cat--on{background:var(--accent-tint);border-color:var(--accent);color:var(--text);font-weight:600}
+.fx-input{min-height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px;width:100%}
+.fx-input:focus{outline:none;border-color:var(--accent)}
+.fx-save{min-height:50px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:600;transition:opacity 150ms ease}
+.fx-save:disabled{opacity:.4;cursor:not-allowed}
+.fx-hint{margin:-8px 0 0;font-size:14px;color:var(--text2);text-align:center}
+
+.fx-toast{position:fixed;left:50%;bottom:28px;z-index:30;transform:translate(-50%,8px);display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity 200ms ease,transform 200ms ease}
+.fx-toast--on{opacity:1;transform:translate(-50%,0)}
+
+.fx--phone{width:360px;height:800px;min-height:0;overflow:hidden;position:relative}
+.fx--phone .fx-scroll{height:100%;overflow-y:auto}
+.fx--phone .fx-sheet-wrap,.fx--phone .fx-toast{position:absolute}
+@container (max-width: 519px){
+  .fx-add{flex:1 1 100%}
+}
+@container (min-width: 720px){
+  .fx-wrap{padding:28px 32px 64px;gap:24px}
+  .fx-hero{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .fx-stat{padding:20px 22px}
+  .fx-big{font-size:34px}
+  .fx-cards{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
+  .fx-card{padding:22px 24px}
+  .fx-title h1{font-size:30px}
+}
+@media (prefers-reduced-motion: reduce){
+  .fx *,.fx *::before,.fx *::after{transition:none !important}
+}
+
+.fx{min-height:100vh}
+.fx-icon-btn .fx-ic-sun{display:none}
+.fx-is-dark .fx-icon-btn .fx-ic-sun{display:block}
+.fx-is-dark .fx-icon-btn .fx-ic-moon{display:none}
+.fx-foot{margin:8px 0 0;font-size:14px;color:var(--text2)}
+.fx-foot a{color:var(--text2)}
+.fx-seg-fixed,.fx-seg-var,.fx-fill{width:0}
+.fx-wrap>*{min-width:0}
+</style>
+</head>
+<body>
+<div class="fx" id="fx" data-theme="auto" data-person="marko">
+<div class="fx-wrap">
+
+<header class="fx-head">
+<div class="fx-seg" role="group" aria-label="Чий звіт">
+<button type="button" class="fx-pill" data-person-pick="marko"><span class="fx-dot fx-dot--marko" aria-hidden="true"></span>Марко</button>
+<button type="button" class="fx-pill" data-person-pick="olia"><span class="fx-dot fx-dot--olia" aria-hidden="true"></span>Оля</button>
+</div>
+<span class="fx-spacer"></span>
+<button type="button" class="fx-icon-btn" id="fx-theme" aria-label="Темна тема">
+<svg class="fx-ic-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+<svg class="fx-ic-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg>
+</button>
+<button type="button" class="fx-add" id="fx-open">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+Додати витрату
+</button>
+</header>
+
+<nav class="fx-months" id="fx-months" aria-label="Місяць"></nav>
+
+<div class="fx-title"><h1 id="fx-title"></h1><p id="fx-period"></p></div>
+
+<section class="fx-hero" aria-label="Головні цифри">
+<div class="fx-stat"><span class="fx-stat-label">Дохід</span><span class="fx-big num" id="fx-income"></span><span class="fx-stat-sub" id="fx-income-sub"></span></div>
+<div class="fx-stat"><span class="fx-stat-label">Витрати</span><span class="fx-big num" id="fx-exp"></span><span class="fx-stat-sub num" id="fx-exp-sub"></span></div>
+<div class="fx-stat"><span class="fx-stat-label">Норма заощаджень</span><span id="fx-rate"></span><span class="fx-stat-sub num" id="fx-rate-sub"></span></div>
+</section>
+<p class="fx-lede" id="fx-hero-concl"></p>
+
+<div class="fx-cards">
+<section class="fx-card" aria-labelledby="fx-fixed-h">
+<div class="fx-card-head"><h2 id="fx-fixed-h">Фіксовані і змінні</h2><span class="fx-card-total num" id="fx-exp-static"></span></div>
+<div class="fx-stack" role="img" id="fx-stack"><span class="fx-seg-fixed" id="fx-seg-fixed"></span><span class="fx-seg-var" id="fx-seg-var"></span></div>
+<div class="fx-legend">
+<div class="fx-leg"><span class="fx-leg-top"><i class="fx-sw fx-sw--fixed" aria-hidden="true"></i>Фіксовані</span><span class="fx-leg-val num" id="fx-fixed"></span><span class="fx-leg-pct num" id="fx-fixed-pct"></span></div>
+<div class="fx-leg"><span class="fx-leg-top"><i class="fx-sw fx-sw--var" aria-hidden="true"></i>Змінні</span><span class="fx-leg-val num" id="fx-var"></span><span class="fx-leg-pct num" id="fx-var-pct"></span></div>
+</div>
+<p class="fx-concl" id="fx-fixed-concl"></p>
+</section>
+<section class="fx-card" aria-labelledby="fx-cat-h">
+<div class="fx-card-head"><h2 id="fx-cat-h">Витрати за категоріями</h2><span class="fx-card-total num" id="fx-cat-count"></span></div>
+<ul class="fx-bars" id="fx-bars"></ul>
+<p class="fx-concl" id="fx-cat-concl"></p>
+</section>
+</div>
+
+<p class="fx-foot">Дані з обліку Beancount, звіт сформовано %%TODAY%%. <a href="fava/">Повний облік у Fava</a></p>
+</div>
+
+<div class="fx-sheet-wrap" id="fx-sheet-wrap">
+<button type="button" class="fx-scrim" aria-label="Закрити" data-close></button>
+<form class="fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fx-sheet-h" method="post" action="add" id="fx-form">
+<div class="fx-grab" aria-hidden="true"></div>
+<div class="fx-sheet-head"><h2 id="fx-sheet-h">Додати витрату</h2>
+<button type="button" class="fx-icon-btn" aria-label="Закрити" data-close><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<input type="hidden" name="who" id="fx-who">
+<input type="hidden" name="account" id="fx-account">
+<div class="fx-field"><label class="fx-label" for="fx-amt">Сума</label>
+<div class="fx-amount"><input id="fx-amt" name="amount" class="num" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" required><span>зл</span></div></div>
+<div class="fx-field"><span class="fx-label" id="fx-cat-l">Категорія</span><div class="fx-cats" id="fx-cats" role="group" aria-labelledby="fx-cat-l"></div></div>
+<div class="fx-field"><label class="fx-label" for="fx-desc">Опис</label><input id="fx-desc" name="description" class="fx-input" type="text" maxlength="80" placeholder="Наприклад, обід біля роботи"></div>
+<div class="fx-field"><label class="fx-label" for="fx-date">Дата</label><input id="fx-date" name="date" class="fx-input num" type="date" required></div>
+<button type="submit" class="fx-save" id="fx-save" disabled>Зберегти</button>
+<p class="fx-hint" id="fx-hint">Вкажіть суму і категорію</p>
+</form>
+</div>
+
+<div class="fx-toast" id="fx-toast" role="status" aria-live="polite"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span id="fx-toast-text">Додано</span></div>
+</div>
+
+<script type="application/json" id="fx-data">%%DATA%%</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById("fx-data").textContent);
+  var MONTHS = ["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
+  var OF = ["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
+  var IN = ["січні","лютому","березні","квітні","травні","червні","липні","серпні","вересні","жовтні","листопаді","грудні"];
+  var ACC = { "Доставка їжі": "доставку їжі", "Косметика і побут": "косметику і побут" };
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $("fx");
+  function money(v) {
+    var s = Math.abs(v).toFixed(2).split(".");
+    return (v < 0 ? "−" : "") + s[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "," + s[1] + " зл";
+  }
+  function pct(v) { return v.toFixed(1).replace(".", ",") + " %"; }
+  function lower(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+  function acc(s) { return ACC[s] || lower(s); }
+  function today() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function reduced() { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function store(key, value) { try { if (value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value); } catch (e) { return null; } }
+
+  function summary(mo) {
+    var list = Object.keys(mo.cats).map(function (k) { return { name: k, v: mo.cats[k] }; }).sort(function (a, b) { return b.v - a.v; });
+    var total = list.reduce(function (s, c) { return s + c.v; }, 0);
+    var saved = mo.income - total;
+    return { list: list, total: total, fixed: mo.fixed, variable: total - mo.fixed, income: mo.income, saved: saved, rate: mo.income > 0 ? saved / mo.income * 100 : null };
+  }
+
+  var params = new URLSearchParams(location.search);
+  var state = { person: DATA[params.get("who")] ? params.get("who") : "marko", month: null, cat: null };
+  var shown = { income: 0, total: 0, rate: 0, fixed: 0, variable: 0 };
+  var raf = 0;
+
+  function defaultMonth(p) {
+    var keys = Object.keys(DATA[p].months).sort(), pick = keys[keys.length - 1];
+    keys.forEach(function (k) { var m = DATA[p].months[k]; if (m.lastDay >= m.days) pick = k; });
+    return pick;
+  }
+  var hash = location.hash.slice(1);
+  state.month = DATA[state.person].months[hash] ? hash : defaultMonth(state.person);
+
+  function syncUrl() {
+    try { history.replaceState(null, "", "?who=" + state.person + "#" + state.month); } catch (e) {}
+  }
+
+  function render() {
+    var person = DATA[state.person], keys = Object.keys(person.months).sort();
+    if (!person.months[state.month]) state.month = defaultMonth(state.person);
+    var mo = person.months[state.month], mIdx = parseInt(state.month.slice(5, 7), 10) - 1;
+    var idx = keys.indexOf(state.month), prevKey = idx > 0 ? keys[idx - 1] : null;
+    var prev = prevKey ? summary(person.months[prevKey]) : null, prevIdx = prevKey ? parseInt(prevKey.slice(5, 7), 10) - 1 : 0;
+    var sum = summary(mo), incomplete = mo.lastDay < mo.days, rateNull = sum.rate === null;
+    root.dataset.person = state.person;
+    document.title = person.title;
+
+    [].forEach.call(document.querySelectorAll("[data-person-pick]"), function (b) {
+      var on = b.dataset.personPick === state.person;
+      b.className = "fx-pill" + (on ? " fx-pill--on" : ""); b.setAttribute("aria-pressed", String(on));
+    });
+    var nav = $("fx-months"); nav.textContent = "";
+    keys.forEach(function (k) {
+      var m = person.months[k], i = parseInt(k.slice(5, 7), 10) - 1, inc = m.lastDay < m.days, on = k === state.month;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "fx-chip" + (on ? " fx-chip--on" : ""); b.setAttribute("aria-pressed", String(on));
+      b.textContent = MONTHS[i] + (inc ? " · неповний" : "");
+      if (inc) { var s = document.createElement("span"); s.className = "fx-badge"; s.textContent = "дані до " + m.lastDay + " " + OF[i]; b.appendChild(s); }
+      b.addEventListener("click", function () { if (state.month !== k) { state.month = k; syncUrl(); render(); } });
+      nav.appendChild(b);
+    });
+
+    $("fx-title").textContent = MONTHS[mIdx] + " " + state.month.slice(0, 4);
+    $("fx-period").textContent = incomplete ? "Дані з 1 по " + mo.lastDay + " " + OF[mIdx] + ", місяць ще не завершився" : "Повний місяць, з 1 по " + mo.lastDay + " " + OF[mIdx];
+    $("fx-income-sub").textContent = sum.income > 0 ? "за місяць" : "зарплата ще не надійшла";
+    $("fx-exp-sub").textContent = "у середньому " + money(sum.total / mo.lastDay) + " на день";
+    $("fx-exp-static").textContent = money(sum.total);
+    $("fx-rate").className = rateNull ? "fx-big fx-big--muted" : "fx-big fx-big--accent num";
+    $("fx-rate-sub").textContent = rateNull ? "порахуємо після зарплати" : "відкладено " + money(sum.saved);
+
+    var concl;
+    if (rateNull) concl = "Доходу за цей місяць поки немає, тому норму заощаджень порахувати не можна. Витрати до " + mo.lastDay + " " + OF[mIdx] + " вже " + money(sum.total) + ".";
+    else if (incomplete) concl = "З доходу " + money(sum.income) + " поки залишається " + money(sum.saved) + ". Дані лише до " + mo.lastDay + " " + OF[mIdx] + ", тому порівнювати з попереднім місяцем ще рано.";
+    else if (prev && prev.rate !== null) {
+      var diff = sum.rate - prev.rate;
+      concl = "Відкладено " + money(sum.saved) + " з " + money(sum.income) + ", це на " + Math.abs(diff).toFixed(1).replace(".", ",") + " п.п." + (diff < 0 ? " менше" : " більше") + ", ніж у " + IN[prevIdx] + ".";
+      if (diff < 0) {
+        var worst = null;
+        Object.keys(mo.cats).forEach(function (k) { var d = mo.cats[k] - (person.months[prevKey].cats[k] || 0); if (!worst || d > worst.d) worst = { k: k, d: d }; });
+        if (worst && worst.d > 0) concl += " Найбільше зросла категорія «" + worst.k + "»: плюс " + money(worst.d) + ".";
+      }
+    } else concl = "Відкладено " + money(sum.saved) + " з " + money(sum.income) + ". Це перший місяць у звіті, порівнювати поки нема з чим.";
+    $("fx-hero-concl").textContent = concl;
+
+    var share = sum.total > 0 ? sum.fixed / sum.total * 100 : 0;
+    $("fx-fixed-pct").textContent = pct(share) + " витрат";
+    $("fx-var-pct").textContent = pct(100 - share) + " витрат";
+    $("fx-stack").setAttribute("aria-label", "Фіксовані " + money(sum.fixed) + ", змінні " + money(sum.variable));
+    $("fx-fixed-concl").textContent = share >= 50
+      ? "Більше половини витрат фіксовані. Регулювати можна решту: " + money(sum.variable) + "."
+      : "Фіксовані платежі займають лише " + pct(share) + " витрат. Решта, " + money(sum.variable) + ", залежить від вас, тут і варто шукати економію.";
+
+    var bars = $("fx-bars"); bars.textContent = "";
+    var max = sum.list.length ? sum.list[0].v : 1, fills = [];
+    sum.list.forEach(function (c) {
+      var li = document.createElement("li"); li.className = "fx-bar-row";
+      li.innerHTML = '<div class="fx-bar-meta"><span class="fx-bar-name"></span><span class="fx-bar-val num"></span></div><span class="fx-track" aria-hidden="true"><span class="fx-fill"></span></span>';
+      li.querySelector(".fx-bar-name").textContent = c.name;
+      li.querySelector(".fx-bar-val").textContent = money(c.v);
+      bars.appendChild(li); fills.push([li.querySelector(".fx-fill"), c.v / max * 100]);
+    });
+    $("fx-cat-count").textContent = sum.list.length + " категорій";
+    var top = sum.list[0], second = sum.list[1];
+    var cc = top ? "Найбільше йде на " + acc(top.name) + ": " + money(top.v) + ", це " + pct(top.v / sum.total * 100) + " усіх витрат." + (second ? " Далі " + lower(second.name) + ", " + money(second.v) + "." : "") : "Витрат за цей місяць немає.";
+    if (incomplete) cc += " Місяць неповний, суми ще зростуть.";
+    $("fx-cat-concl").textContent = cc;
+
+    // рух: числа дораховуються, смуги ростуть від нуля за 240 мс
+    var from = shown, target = { income: sum.income, total: sum.total, rate: rateNull ? 0 : sum.rate, fixed: sum.fixed, variable: sum.variable };
+    var fixedW = sum.total > 0 ? sum.fixed / sum.total * 100 : 0, varW = sum.total > 0 ? sum.variable / sum.total * 100 : 0;
+    var start = performance.now(), dur = reduced() ? 0 : 240;
+    cancelAnimationFrame(raf);
+    function frame(now) {
+      var t = dur ? Math.min(1, (now - start) / dur) : 1, e = 1 - Math.pow(1 - t, 3);
+      var lerp = function (k) { return from[k] + (target[k] - from[k]) * e; };
+      shown = { income: lerp("income"), total: lerp("total"), rate: lerp("rate"), fixed: lerp("fixed"), variable: lerp("variable") };
+      $("fx-income").textContent = money(shown.income);
+      $("fx-exp").textContent = money(shown.total);
+      $("fx-rate").textContent = rateNull ? "немає доходу" : pct(shown.rate);
+      $("fx-fixed").textContent = money(shown.fixed);
+      $("fx-var").textContent = money(shown.variable);
+      $("fx-seg-fixed").style.width = (fixedW * e).toFixed(2) + "%";
+      $("fx-seg-var").style.width = (varW * e).toFixed(2) + "%";
+      fills.forEach(function (f) { f[0].style.width = (f[1] * e).toFixed(2) + "%"; });
+      if (t < 1) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    renderChips();
+  }
+
+  // форма
+  function renderChips() {
+    var box = $("fx-cats"); box.textContent = "";
+    DATA[state.person].chips.forEach(function (c) {
+      var b = document.createElement("button"), on = state.cat === c.account;
+      b.type = "button"; b.className = "fx-cat" + (on ? " fx-cat--on" : ""); b.setAttribute("aria-pressed", String(on));
+      b.textContent = c.label;
+      b.addEventListener("click", function () { state.cat = c.account; renderChips(); check(); });
+      box.appendChild(b);
+    });
+  }
+  function check() {
+    var v = parseFloat($("fx-amt").value.replace(/\s/g, "").replace(",", "."));
+    var ok = v > 0 && !!state.cat;
+    $("fx-save").disabled = !ok;
+    $("fx-hint").textContent = ok ? "Витрата потрапить у звіт " + DATA[state.person].gen : "Вкажіть суму і категорію";
+    $("fx-who").value = state.person; $("fx-account").value = state.cat || "";
+  }
+  function openSheet() {
+    state.cat = null; $("fx-amt").value = ""; $("fx-desc").value = ""; $("fx-date").value = today();
+    renderChips(); check();
+    $("fx-sheet-wrap").classList.add("fx-sheet-wrap--open");
+    setTimeout(function () { $("fx-amt").focus(); }, 260);
+  }
+  function closeSheet() { $("fx-sheet-wrap").classList.remove("fx-sheet-wrap--open"); }
+  $("fx-open").addEventListener("click", openSheet);
+  [].forEach.call(document.querySelectorAll("[data-close]"), function (b) { b.addEventListener("click", closeSheet); });
+  $("fx-amt").addEventListener("input", function () { this.value = this.value.replace(/[^\d.,\s]/g, ""); check(); });
+  $("fx-form").addEventListener("submit", function () { $("fx-save").disabled = true; $("fx-save").textContent = "Зберігаємо…"; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSheet(); });
+
+  [].forEach.call(document.querySelectorAll("[data-person-pick]"), function (b) {
+    b.addEventListener("click", function () { if (state.person !== b.dataset.personPick) { state.person = b.dataset.personPick; state.cat = null; syncUrl(); render(); } });
+  });
+
+  // тема: пам’ятаємо вибір у цьому браузері
+  function applyTheme(t) {
+    root.dataset.theme = t;
+    var dark = t === "dark" || (t === "auto" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    root.classList.toggle("fx-is-dark", dark);
+    $("fx-theme").setAttribute("aria-label", dark ? "Світла тема" : "Темна тема");
+    return dark;
+  }
+  var dark = applyTheme(store("fx-theme") || "auto");
+  $("fx-theme").addEventListener("click", function () { var t = dark ? "light" : "dark"; store("fx-theme", t); dark = applyTheme(t); });
+
+  // повідомлення після збереження
+  var added = params.get("added");
+  if (added && /^\d+(\.\d{1,2})?$/.test(added)) {
+    $("fx-toast-text").textContent = "Додано " + added.replace(".", ",") + " зл";
+    $("fx-toast").classList.add("fx-toast--on");
+    setTimeout(function () { $("fx-toast").classList.remove("fx-toast--on"); }, 2200);
+  }
+  syncUrl();
+  render();
+})();
+</script>
+</body>
+</html>
